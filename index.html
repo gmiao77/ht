@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>add</title>
+    <title>厚台</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,6 +37,13 @@
             .user-row {
                 @apply border-b last:border-0 py-3 hover:bg-gray-50 transition-colors;
             }
+            .fade-in {
+                animation: fadeIn 0.3s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
         }
     </style>
 </head>
@@ -46,11 +53,11 @@
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <i class="fa fa-cogs text-primary text-2xl"></i>
-                <h1 class="text-xl md:text-2xl font-bold text-gray-800">add</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">好好好</h1>
             </div>
             <div class="flex items-center gap-4">
                 <span id="admin-user" class="text-sm text-gray-600 hidden md:block"></span>
-                <button id="logout-btn" class="text-sm text-gray-600 hover:text-primary">
+                <button id="logout-btn" class="text-sm text-gray-600 hover:text-primary transition-colors">
                     <i class="fa fa-sign-out mr-1"></i> 退出登录
                 </button>
             </div>
@@ -59,32 +66,38 @@
 
     <!-- 主内容区 -->
     <main class="container mx-auto px-4 py-8">
+        <!-- 权限提示 -->
+        <div id="permission-denied" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6 fade-in">
+            <p><i class="fa fa-exclamation-circle mr-2"></i>你没有管理员权限，无法访问此页面</p>
+        </div>
+
         <!-- 管理员登录 -->
-        <div id="admin-login" class="max-w-md mx-auto bg-white rounded-xl card-shadow p-6">
+        <div id="admin-login" class="max-w-md mx-auto bg-white rounded-xl card-shadow p-6 fade-in hidden">
             <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">管理员登录</h2>
             
             <div class="mb-4">
                 <label for="admin-email" class="block text-sm font-medium text-gray-700 mb-1">管理员邮箱</label>
-                <input type="email" id="admin-email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none" placeholder="请输入管理员邮箱">
+                <input type="email" id="admin-email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="请输入管理员邮箱">
             </div>
             
             <div class="mb-6">
                 <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-1">管理员密码</label>
-                <input type="password" id="admin-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none" placeholder="请输入管理员密码">
+                <input type="password" id="admin-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="请输入管理员密码">
             </div>
             
-            <button id="admin-login-btn" class="w-full bg-primary text-white font-medium py-2 px-4 rounded-lg btn-hover">
-                登录
+            <button id="admin-login-btn" class="w-full bg-primary text-white font-medium py-2 px-4 rounded-lg btn-hover flex items-center justify-center gap-2">
+                <i class="fa fa-sign-in"></i>
+                <span>登录</span>
             </button>
             
             <div id="admin-login-message" class="mt-4 text-sm hidden text-center"></div>
         </div>
 
         <!-- 管理面板 -->
-        <div id="admin-panel" class="hidden">
+        <div id="admin-panel" class="hidden fade-in">
             <!-- 统计信息 -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-xl card-shadow p-6">
+                <div class="bg-white rounded-xl card-shadow p-6 transform transition-all hover:scale-[1.02]">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-sm">总用户数</p>
@@ -96,7 +109,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-xl card-shadow p-6">
+                <div class="bg-white rounded-xl card-shadow p-6 transform transition-all hover:scale-[1.02]">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-sm">总生成次数</p>
@@ -108,7 +121,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-xl card-shadow p-6">
+                <div class="bg-white rounded-xl card-shadow p-6 transform transition-all hover:scale-[1.02]">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-sm">剩余总次数</p>
@@ -123,10 +136,10 @@
             
             <!-- 用户管理 -->
             <div class="bg-white rounded-xl card-shadow p-6 mb-8">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <h2 class="text-xl font-semibold text-gray-800">用户管理</h2>
-                    <div class="relative">
-                        <input type="text" id="user-search" placeholder="搜索用户邮箱或名称" class="pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none text-sm">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="user-search" placeholder="搜索用户邮箱或名称" class="w-full md:w-64 pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none text-sm">
                         <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
                 </div>
@@ -145,7 +158,6 @@
                             </tr>
                         </thead>
                         <tbody id="users-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- 用户数据将通过JavaScript动态加载 -->
                             <tr>
                                 <td colspan="7" class="px-6 py-10 text-center text-gray-500">
                                     <i class="fa fa-spinner fa-spin mr-2"></i>加载用户数据中...
@@ -157,11 +169,11 @@
             </div>
             
             <!-- 增加次数的模态框 -->
-            <div id="add-uses-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
-                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+            <div id="add-uses-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+                <div class="bg-white rounded-xl p-6 w-full max-w-md transform scale-95 transition-transform duration-300">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-gray-800">增加使用次数</h3>
-                        <span id="close-add-uses" class="text-gray-500 hover:text-gray-700 cursor-pointer">
+                        <span id="close-add-uses" class="text-gray-500 hover:text-gray-700 cursor-pointer transition-colors">
                             <i class="fa fa-times"></i>
                         </span>
                     </div>
@@ -175,7 +187,7 @@
                     
                     <div class="mb-6">
                         <label for="add-uses-count" class="block text-sm font-medium text-gray-700 mb-1">增加次数</label>
-                        <input type="number" id="add-uses-count" min="1" value="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none">
+                        <input type="number" id="add-uses-count" min="1" value="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
                         <p class="text-xs text-gray-500 mt-1">输入要增加的使用次数，每次至少增加1次</p>
                     </div>
                     
@@ -194,9 +206,5 @@
         </div>
     </main>
 
-
-<script src="add.js"></script>
-  
 </body>
-
 </html>
